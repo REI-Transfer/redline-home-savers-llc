@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { Shield, Clock, DollarSign } from "lucide-react"
 import { SurveyCard } from "@/components/survey/survey-card"
 import { VSLSection } from "@/components/survey/vsl-section"
 import { Header } from "@/components/layout/header"
@@ -39,6 +40,22 @@ export default function HomePage() {
             <p className="mt-2 md:mt-3 text-base md:text-lg text-white/70">
               {config.subheadline}
             </p>
+
+            {/* Trust badges strip */}
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-6">
+              <div className="flex items-center gap-2 text-white/80 text-sm md:text-base">
+                <Shield className="h-4 w-4 text-white" />
+                <span>Trusted</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/80 text-sm md:text-base">
+                <Clock className="h-4 w-4 text-white" />
+                <span>24-Hour Cash Offers</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/80 text-sm md:text-base">
+                <DollarSign className="h-4 w-4 text-white" />
+                <span>No Fees. No Commissions.</span>
+              </div>
+            </div>
 
             {/* Trust indicators — accent-colored checkmarks */}
             <div className="mt-3 md:mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 md:gap-5">
