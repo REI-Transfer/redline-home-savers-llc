@@ -7,12 +7,6 @@ import { Footer } from "@/components/layout/footer"
 import config from "@/lib/config"
 
 export default function HomePage() {
-  const stats = [
-    { value: config.stat1Value, label: config.stat1Label },
-    { value: config.stat2Value, label: config.stat2Label },
-    { value: config.stat3Value, label: config.stat3Label },
-  ]
-
   // Parse service areas for client-side validation
   let parsedServiceAreas: Array<{ id: string; centerLat: number; centerLng: number; radiusMiles: number }> = []
   try { parsedServiceAreas = JSON.parse(config.serviceAreas) } catch {}
@@ -57,29 +51,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Trust indicators — accent-colored checkmarks */}
-            <div className="mt-3 md:mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 md:gap-5">
-              {stats.map((stat) => (
-                <div key={stat.label} className="flex items-center gap-1.5">
-                  <div
-                    className="flex h-6 w-6 items-center justify-center rounded-full"
-                    style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
-                  >
-                    <svg
-                      className="h-3.5 w-3.5"
-                      style={{ color: "white" }}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="text-sm md:text-base font-medium text-white/80">
-                    <strong>{stat.value}</strong> {stat.label}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Survey Form */}
