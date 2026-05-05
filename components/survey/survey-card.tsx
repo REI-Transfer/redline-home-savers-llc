@@ -342,7 +342,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
   const handleOptionSelect = (field: keyof SurveyData, value: string) => {
     setSurveyData({ ...surveyData, [field]: value })
 
-    if (field === "propertyType" && ["mobile-home", "land", "other"].includes(value)) {
+    if (field === "propertyType" && ["condo-townhouse", "mobile-home", "land", "other"].includes(value)) {
       setTimeout(() => { setDisqualifyReason("propertyType"); setIsDisqualified(true) }, 300)
       return
     }
@@ -398,7 +398,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
       propertyType: {
         title: "We're Unable to Assist",
         message: "Unfortunately, we're not able to make an offer on this type of property at this time.",
-        detail: "We primarily purchase single-family homes, multi-family properties, and condos/townhouses. If you have a different property you'd like to sell, feel free to reach out.",
+        detail: "We primarily purchase single-family homes and multi-family properties. If you have a different property you'd like to sell, feel free to reach out.",
       },
       outOfArea: {
         title: "Outside Our Service Area",
