@@ -390,6 +390,10 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
       setTimeout(() => { setDisqualifyReason("ownershipLength"); setIsDisqualified(true) }, 300)
       return
     }
+    if (field === "condition" && value === "excellent") {
+      setTimeout(() => { setDisqualifyReason("excellentCondition"); setIsDisqualified(true) }, 300)
+      return
+    }
 
     setTimeout(() => { if (step < totalSteps) setStep(step + 1) }, 300)
   }
@@ -440,6 +444,11 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         title: "We're Unable to Assist",
         message: "Unfortunately, we're unable to make an offer on properties that have been owned for less than 3 years.",
         detail: "Once you've owned the property for a bit longer, we'd love to revisit. Feel free to reach out at that time.",
+      },
+      excellentCondition: {
+        title: "We're Unable to Assist",
+        message: "Unfortunately, we're not able to make offers on properties in excellent condition at this time.",
+        detail: "We typically work with homeowners whose properties need repairs or updates. If your situation changes, feel free to reach out.",
       },
       outOfArea: {
         title: "Outside Our Service Area",
