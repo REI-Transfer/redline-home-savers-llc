@@ -27,6 +27,7 @@ interface AddressAutocompleteProps {
   onOutOfArea?: (address: string) => void
   serviceAreas?: ServiceArea[]
   placeholder?: string
+  className?: string
 }
 
 declare global {
@@ -34,6 +35,37 @@ declare global {
     google: typeof google
     initGooglePlaces: () => void
   }
+}
+
+// Singleton loader: the Google Maps script must load EXACTLY ONCE per page. The
+// advertorial renders multiple AddressAutocomplete instances (sticky top bar +
+// embedded survey + modal). Each used to inject its own <script>, so Google loaded
+// multiple times and the Places API threw "included multiple times" and broke
+// autocomplete page-wide. This shared promise guarantees a single load; every
+// instance awaits it and binds when ready.
+let googleMapsPromise: Promise<void> | null = null
+function loadGoogleMaps(): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve()
+  if (window.google?.maps?.places) return Promise.resolve()
+  if (googleMapsPromise) return googleMapsPromise
+  googleMapsPromise = new Promise<void>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>("script[data-google-maps]")
+    if (existing) {
+      existing.addEventListener("load", () => resolve())
+      existing.addEventListener("error", () => reject(new Error("Google Maps failed to load")))
+      if (window.google?.maps?.places) resolve()
+      return
+    }
+    const script = document.createElement("script")
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}&libraries=places`
+    script.async = true
+    script.defer = true
+    script.setAttribute("data-google-maps", "true")
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error("Google Maps failed to load"))
+    document.head.appendChild(script)
+  })
+  return googleMapsPromise
 }
 
 function haversineDistanceMiles(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -56,29 +88,26 @@ export function AddressAutocomplete({
   onOutOfArea,
   serviceAreas = [],
   placeholder = "Start typing your address...",
+  className = "",
 }: AddressAutocompleteProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    if (window.google?.maps?.places) {
-      setIsLoaded(true)
-      initAutocomplete()
-      return
-    }
-
-    const script = document.createElement("script")
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}&libraries=places`
-    script.async = true
-    script.defer = true
-    script.onload = () => {
-      setIsLoaded(true)
-      initAutocomplete()
-    }
-    document.head.appendChild(script)
+    let cancelled = false
+    loadGoogleMaps()
+      .then(() => {
+        if (cancelled) return
+        setIsLoaded(true)
+        initAutocomplete()
+      })
+      .catch(() => {
+        /* key/network failure, input still works as a plain text field */
+      })
 
     return () => {
+      cancelled = true
       if (autocompleteRef.current) {
         google.maps.event.clearInstanceListeners(autocompleteRef.current)
       }
@@ -147,7 +176,7 @@ export function AddressAutocomplete({
   }
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
         <MapPin className="h-5 w-5 text-gray-400" />
       </div>
