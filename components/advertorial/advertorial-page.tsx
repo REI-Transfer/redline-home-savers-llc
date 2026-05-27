@@ -66,6 +66,7 @@ export function AdvertorialPage({
   const [stickyAddr, setStickyAddr] = useState("")
   const [seeded, setSeeded] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [outOfArea, setOutOfArea] = useState(false)
 
   // ---- Sticky bar reveal on scroll (hide while the form is on screen) ----
   useEffect(() => {
@@ -88,10 +89,21 @@ export function AdvertorialPage({
   // address and open the popup with the form already at question 2. If they typed
   // without selecting, the popup opens at the address step.
   const handleStickySelect = (address: string, _details: AddressDetails) => {
+    setOutOfArea(false)
     setSeeded(address)
     setModalOpen(true)
   }
+  // Out-of-area picks from the sticky bar must NOT seed or open the form. Show the
+  // out-of-area notice instead, mirroring the survey card's message. When SERVICE_AREAS
+  // is empty (nationwide) this never fires, so it is a safe no-op.
+  const handleStickyOutOfArea = (addr: string) => {
+    setStickyAddr(addr)
+    setSeeded(null)
+    setModalOpen(false)
+    setOutOfArea(true)
+  }
   const openModalFromButton = () => {
+    if (outOfArea) return
     if (!seeded && stickyAddr.trim()) setSeeded(stickyAddr.trim())
     setModalOpen(true)
   }
@@ -392,7 +404,7 @@ export function AdvertorialPage({
         <div className="max-w-[760px] mx-auto flex gap-2.5 items-center">
           <label className="hidden sm:block text-[13px] font-bold whitespace-nowrap">Type your address to begin:</label>
           <div className="flex-1 min-w-0">
-            <AddressAutocomplete value={stickyAddr} onChange={setStickyAddr} onSelect={handleStickySelect} serviceAreas={serviceAreas} placeholder="Your property address" />
+            <AddressAutocomplete value={stickyAddr} onChange={(a) => { setStickyAddr(a); setOutOfArea(false) }} onSelect={handleStickySelect} onOutOfArea={handleStickyOutOfArea} serviceAreas={serviceAreas} placeholder="Your property address" />
           </div>
           <button onClick={openModalFromButton} style={{ background: C.cta }} className="px-4 sm:px-[18px] py-3 text-white rounded-[9px] text-[14px] sm:text-[15px] font-extrabold whitespace-nowrap hover:opacity-95 transition-opacity">
             See My Cash Offer →
@@ -413,6 +425,25 @@ export function AdvertorialPage({
               initialAddress={seeded || undefined}
               initialStep={seeded ? 2 : undefined}
             />
+          </div>
+        </div>
+      )}
+
+      {/* ============ OUT-OF-AREA NOTICE (sticky bar pick outside service area) ============ */}
+      {outOfArea && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4" style={{ background: "rgba(0,0,0,0.55)" }} onClick={() => setOutOfArea(false)}>
+          <div className="relative w-full max-w-[460px] rounded-2xl bg-white p-8 shadow-lg text-center" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setOutOfArea(false)} aria-label="Close" className="absolute top-3 right-3 h-8 w-8 rounded-full bg-gray-100 text-gray-700 text-lg font-bold flex items-center justify-center hover:bg-gray-200">×</button>
+            <h3 className="text-[22px] font-extrabold mb-2">Outside Our Service Area</h3>
+            <p className="text-[15px] mb-2" style={{ color: C.muted }}>
+              We currently purchase properties throughout {where}. That address looks like it falls outside the areas we cover right now.
+            </p>
+            <p className="text-[14px] mb-5" style={{ color: C.muted }}>
+              If you believe your property is within our area, try a different address or give us a call and we will take a look.
+            </p>
+            <a href={tel} style={{ background: C.accent }} className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-white font-bold text-[16px] hover:opacity-90 transition-opacity whitespace-nowrap">
+              Call Us: {phoneDisplay}
+            </a>
           </div>
         </div>
       )}
