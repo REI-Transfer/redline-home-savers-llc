@@ -1,6 +1,11 @@
 import Image from "next/image"
+import Link from "next/link"
 import { CheckCircle2, Phone } from "lucide-react"
 import config from "@/lib/config"
+import { ContactCTA } from "@/components/article/contact-cta"
+import { ARTICLES } from "@/lib/articles"
+
+const RECOMMENDED_READS = ARTICLES.slice(0, 4)
 
 export default function ThankYouPage() {
   return (
@@ -64,27 +69,73 @@ export default function ThankYouPage() {
 
           <div className="space-y-4 text-gray-700 leading-relaxed">
             <p>
-              If you&apos;re reading this, you just took a step that most homeowners put off for months. Maybe years.
-              So before anything else &mdash; we want you to know that was the right call.
+              If you are reading this, you just took a step that most homeowners put off for months. Sometimes years.
+              So before anything else, we want you to know that was the right call.
             </p>
             <p>
-              Selling a house is stressful. The uncertainty, the waiting, the feeling like you&apos;re at the mercy of a system
-              that wasn&apos;t built for you. Realtors want you to fix everything up, stage the house, wait 90 days,
-              and hope for the best. That works for some people. But not everyone.
+              Selling a house is stressful. The uncertainty, the waiting, the feeling like you are at the mercy of a system
+              that was not built for you. Agents want you to fix everything up, stage the place, wait 90 days,
+              and hope for the best. That works for some people. It does not work for everyone.
             </p>
             <p>
-              We started {config.companyName} because we kept meeting good people stuck in bad situations. Inherited properties
-              they couldn&apos;t afford to keep. Houses that needed more work than they had time or money for. Divorces,
-              job relocations, tax liens &mdash; life happens. And when it does, the last thing you need is someone telling
-              you to repaint your kitchen and &ldquo;list it in the spring.&rdquo;
+              We started {config.companyName} because we kept meeting good people stuck in hard spots. Inherited homes
+              they could not afford to keep. Houses that needed more work than they had the time or the money for. Divorces,
+              job moves, taxes piling up. Life happens. And when it does, the last thing you need is someone telling
+              you to repaint the kitchen and list it in the spring.
             </p>
             <p>
-              Here&apos;s what happens next: Our team is going to review the information you submitted. Within 24 hours,
-              you&apos;ll hear from us with a fair, no-obligation cash offer. No pressure. No games. If the number works
-              for you, great. If it doesn&apos;t, no hard feelings. We&apos;ll still answer any questions you have.
+              Here is what happens next. Our team is going to review the information you sent over. Within 24 hours,
+              you will hear from us with a fair, no-obligation cash offer. No pressure. No games. If the number works
+              for you, wonderful. If it does not, no hard feelings. We will still answer any questions you have.
             </p>
           </div>
         </div>
+
+        {/* While you wait: advertorial reads */}
+        <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6 md:p-8 mb-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-1">While You Wait, a Few Honest Reads</h3>
+          <p className="text-sm text-gray-500 mb-5">
+            Straight talk on the questions almost every homeowner asks before they sell.
+          </p>
+          <div className="grid grid-cols-1 gap-3">
+            {RECOMMENDED_READS.map((a) => (
+              <Link
+                key={a.slug}
+                href={a.slug}
+                className="group flex gap-4 rounded-xl border border-gray-200 p-3 transition-colors hover:bg-gray-50 no-underline"
+              >
+                <Image
+                  src={a.image}
+                  alt={a.title}
+                  width={120}
+                  height={90}
+                  className="h-[72px] w-[96px] sm:h-[84px] sm:w-[112px] shrink-0 rounded-lg object-cover bg-gray-100"
+                />
+                <div className="min-w-0">
+                  <div className="font-bold text-gray-900 leading-snug">{a.title}</div>
+                  <p className="mt-1 text-sm text-gray-500 line-clamp-2">{a.teaser}</p>
+                  <span className="mt-1 inline-block text-sm font-semibold" style={{ color: config.accentColor }}>
+                    Read the article &rarr;
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-4 text-center">
+            <Link href="/articles" className="text-sm font-semibold underline" style={{ color: config.accentColor }}>
+              See all articles
+            </Link>
+          </div>
+        </div>
+
+        {/* Text / call CTA */}
+        <ContactCTA
+          phoneDisplay={config.phoneDisplay}
+          phoneHref={config.phoneHref}
+          smsKeyword={config.smsKeyword}
+          heading="Want your offer faster? Reach us now."
+          subheading={`Tap to text us the word ${config.smsKeyword}, or call and a local team member will pick up.`}
+        />
 
         {/* What happens next */}
         <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6 md:p-8 mb-8">
@@ -92,7 +143,7 @@ export default function ThankYouPage() {
           <div className="space-y-4">
             {[
               { step: "1", title: "We review your property", desc: "Our team looks at your submission and researches the property." },
-              { step: "2", title: "You get a cash offer", desc: "Within 24 hours, we\u2019ll reach out with a fair, no-obligation offer." },
+              { step: "2", title: "You get a cash offer", desc: "Within 24 hours, we reach out with a fair, no-obligation offer." },
               { step: "3", title: "You choose your closing date", desc: "If you accept, you pick the date. We handle the rest." },
             ].map(({ step, title, desc }) => (
               <div key={step} className="flex gap-4">

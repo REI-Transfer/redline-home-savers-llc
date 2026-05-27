@@ -206,12 +206,17 @@ interface SurveyCardProps {
   phoneDisplay?: string
   phoneHref?: string
   serviceAreas?: ServiceArea[]
+  // Optional seeding so the advertorial sticky address bar can open the form at the
+  // next question with the captured address already filled. Additive only; does not
+  // change submission, webhook, or any connections.
+  initialAddress?: string
+  initialStep?: number
 }
 
-export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "8000000000", serviceAreas = [] }: SurveyCardProps) {
-  const [step, setStep] = useState(1)
+export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "8000000000", serviceAreas = [], initialAddress, initialStep }: SurveyCardProps) {
+  const [step, setStep] = useState(initialStep ?? 1)
   const [surveyData, setSurveyData] = useState<SurveyData>({
-    address: "",
+    address: initialAddress ?? "",
     propertyType: "",
     isLegalOwner: "",
     ownershipLength: "",
@@ -228,7 +233,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isDisqualified, setIsDisqualified] = useState(false)
   const [disqualifyReason, setDisqualifyReason] = useState("")
-  const [addressVerified, setAddressVerified] = useState(false)
+  const [addressVerified, setAddressVerified] = useState(Boolean(initialAddress))
   const [addressOutOfArea, setAddressOutOfArea] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({})
